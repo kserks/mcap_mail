@@ -81,7 +81,7 @@ input{
 	display: block;
 	outline: 0;
 	border: none;
-	caret-color: deepskyblue;
+	caret-color: darkcyan;
 	background-color: #223;
 	border-radius: 4px;
 	height: 40px;
@@ -92,7 +92,7 @@ textarea{
 	outline: 0;
 	border: none;
 	resize: none;
-	caret-color: deepskyblue;
+	caret-color: darkcyan;
 	background-color: #223;
 	border-radius: 4px;
 	color: wheat;
@@ -100,4 +100,15 @@ textarea{
 textarea::placeholder,
 input::placeholder{
 	color: rgba(200,200,200, 0.1);
+}
+
+
+input[type="number"] {
+  -webkit-appearance: textfield;
+     -moz-appearance: textfield;
+          appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
 }

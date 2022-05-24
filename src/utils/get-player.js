@@ -1,3 +1,5 @@
+const uknown = 'mcap_serg';
+
 export default function (){
   return new Promise((resolve, reject)=>{
         try {
@@ -12,7 +14,7 @@ export default function (){
 
         } 
         catch (err) {
-            resolve('mcap_serg')
+            resolve(uknown)
         }
 
   })

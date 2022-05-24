@@ -2,7 +2,8 @@ import { writable } from 'svelte/store';
 
 
 
-/*
 
 
-export let focusEditor = writable(false)*/
+export let playerName = writable(null);
+export let flagComponent = writable(0);
+export let currentMail = writable(null);
