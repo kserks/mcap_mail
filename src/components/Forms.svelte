@@ -6,6 +6,8 @@ import { createEventDispatcher } from 'svelte';
 
 const emit = createEventDispatcher();
 
+const MONTH = 259200; //s
+
 let body = {
     "id": "",
     "sender": "",
@@ -99,7 +101,7 @@ textarea{
 }
 .controls input{
   width: 107px;
-
+  text-align: center;
 }
 .send{
   width: 100%;

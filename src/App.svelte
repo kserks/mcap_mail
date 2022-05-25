@@ -1,27 +1,25 @@
 <script>
 import api from './utils/api.js';
-import { flagComponent } from './store/common.js';
+import { flagComponent, playerName, mails } from './store/common.js';
 /* components */
 import Nav from './components/Nav.svelte';
 import Mails from './components/Mails.svelte';
 import Forms from './components/Forms.svelte';
 import ReadMail from './components/ReadMail.svelte';
+import UnlockMail from './components/UnlockMail.svelte';
 
 
+window.setName = function (name){
+	$playerName = name
+}
 
-
-
-
-let mails = [];
 
 
 function getMails (){
 	fetch(api.get_mails)
-			.then(r=>r.json())
-			.then((data)=>{
-				mails = data.items;
-			})
-			.catch(err=>console.error(err))
+			.then(r => r.json())
+			.then(data => $mails = data.items )
+			.catch(err => console.error(err))
 }
 
 getMails();
@@ -35,7 +33,7 @@ getMails();
  * [ storage ] - { tso } - время до которого будет храниться
  */
 
-const components = [ Forms, ReadMail ]
+const components = [ Forms, ReadMail, UnlockMail ]
 
 </script>
 
@@ -43,8 +41,9 @@ const components = [ Forms, ReadMail ]
 	<Nav/>
 	<div class="wrapper">
 			<aside>
-				<h3>Список отправлений</h3>
-				<Mails mails={mails}/>
+				{#if $playerName}
+					<Mails/>
+				{/if}
 			</aside>
 			<svelte:component this={ components[$flagComponent] } on:update_mail_list={getMails}/>
 
@@ -68,9 +67,7 @@ main{
 	height: 93%;
 
 }
-h3{
-	padding-left: 20px;
-}
+
 
 aside:first-child{
 	width: 40%;

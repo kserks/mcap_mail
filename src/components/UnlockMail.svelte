@@ -6,7 +6,8 @@
 <aside class="forms">
   <span>{$currentMail.sender}</span>
   <h3>{$currentMail.subject}</h3>
-  <p>{$currentMail.body}</p>
+  <h3 style="color: brown">200</h3>
+  <button>Разблокировать</button>
 </aside>
 
 <style scoped>
@@ -21,8 +22,7 @@ h3{
     background-color: #223;
     border-radius: 4px;
     padding: 10px;
-    color: gray;  
-
+    color: gray;
 }
 p{
     width: 100%;

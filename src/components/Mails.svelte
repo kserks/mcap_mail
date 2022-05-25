@@ -1,23 +1,46 @@
 <script>
-  import { flagComponent, currentMail } from '../store/common.js';
-  export let mails;
-  function openMail (mail){
-    $flagComponent = 1;
+import { flagComponent, currentMail, mails, playerName } from '../store/common.js';
+
+function openMail (mail){
+    if(mail.lock){
+        $flagComponent = 2;
+    }
+    else{
+        $flagComponent = 1;
+    }
     $currentMail = mail;
-  }
+}
+
+$:mails_incoming = $mails.filter(mail => {
+  mail.lock = true;
+  if(mail.target===$playerName) return true;
+});
+$:mails_self = $mails.filter(mail => mail.sender===$playerName);
+
 </script>
 
+<div>
+  <h3>Входящие</h3>
   <ul class="mails">
-          {#each mails as mail}
+          {#each mails_incoming as mail, index}
+              <li on:click={()=>{openMail(mail)}} class="{mail.lock?'lock':''}">{mail.subject}</li>
+          {/each}
+  </ul>
+  <h3>Исходящие</h3>
+  <ul class="mails">
+          {#each mails_self as mail, index}
               <li on:click={()=>{openMail(mail)}}>{mail.subject}</li>
           {/each}
   </ul>
-
+</div>
 <style scoped>
-
+h3{
+  padding-left: 20px;
+}
 ul{
   padding: 0 20px;
   overflow: auto;
+  height: 150px;
 }
 li{
   list-style: none;
@@ -32,5 +55,9 @@ li:hover{
   background-color: rgba(0,100,250,0.1);
 }
 
+.lock{
+  background-color: rgba(100, 50, 0, 0.2);
+
+}
 
 </style>
