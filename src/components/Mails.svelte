@@ -1,5 +1,5 @@
 <script>
-import { flagComponent, currentMail, mails, playerName } from '../store/common.js';
+import { flagComponent, currentMail, mails, playerName, senderPlayer } from '../store/common.js';
 
 function openMail (mail){
     if(mail.lock){
@@ -9,10 +9,17 @@ function openMail (mail){
         $flagComponent = 1;
     }
     $currentMail = mail;
+    $senderPlayer = mail.sender;
+}
+function openSelfMail (mail){
+    $flagComponent = 1;
+    $currentMail = mail;
+    $senderPlayer = mail.sender;
+
 }
 
 $:mails_incoming = $mails.filter(mail => {
-  mail.lock = true;
+  if(mail.price>0) mail.lock = true;
   if(mail.target===$playerName) return true;
 });
 $:mails_self = $mails.filter(mail => mail.sender===$playerName);
@@ -26,10 +33,10 @@ $:mails_self = $mails.filter(mail => mail.sender===$playerName);
               <li on:click={()=>{openMail(mail)}} class="{mail.lock?'lock':''}">{mail.subject}</li>
           {/each}
   </ul>
-  <h3>Исходящие</h3>
+  <h3>Отправленные</h3>
   <ul class="mails">
           {#each mails_self as mail, index}
-              <li on:click={()=>{openMail(mail)}}>{mail.subject}</li>
+              <li on:click={()=>{openSelfMail(mail)}}>{mail.subject}</li>
           {/each}
   </ul>
 </div>

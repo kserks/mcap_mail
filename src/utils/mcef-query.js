@@ -22,3 +22,33 @@ export default function (body){
 
   })
 }
+
+/**
+ * USAGE
+ */
+/*
+function attach (){
+
+  let data = {
+        "data": "itp slot 0 mcap_serg coords 636 69 -554",
+        "action": "executeCMD",
+        "uuid": uid(),
+        "type": "server",
+        "dts": getTime(),
+        "ars": true,
+        "player": $playerName
+  }
+  let str = `CMD_${JSON.stringify(data)}`;
+
+  mcefQuery(str)
+    .then(res=>alert(JSON.stringify(res)))
+    .catch(err=>alert(JSON.stringify(err)))
+ // return  query(str);
+}
+
+
+
+
+
+
+ */

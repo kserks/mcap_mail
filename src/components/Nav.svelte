@@ -1,6 +1,6 @@
 <script>
 import getPlayer from '../utils/get-player.js';
-import { playerName, flagComponent } from '../store/common.js';
+import { playerName, flagComponent, balance } from '../store/common.js';
 
 
 getPlayer()
@@ -9,27 +9,23 @@ getPlayer()
 
 
 
-let balance = 0;
-
-
-function add_mail(){
-  $flagComponent = 0;
-}
 
 </script>
 
 <nav> 
-      {#if $flagComponent===1}
+    <!--
+      {#if $flagComponent>0}
         <img src='/icons/add-mail.svg' alt="" class="add-mail" on:click={add_mail}>
       {:else}
-        <span></span>
-      {/if}
+       {/if}
+     -->
+       <span></span>
+     
       <div class="nav__group">
           {#if $playerName}
             <span class="player">{$playerName}</span>
           {/if}
-
-          <span class="balance">{balance}</span>
+          <span class="balance">{$balance}</span>
       </div>
 </nav>
 
@@ -66,11 +62,12 @@ nav{
   padding-bottom: 3px;
 }
 .balance{
-
+  min-width: 40px;
   font-size: 16px;
   display: inline-flex;
   align-items: center;
   color: rgba(0,100,100,0.7);
+  justify-content: flex-end;
 }
 
 </style>

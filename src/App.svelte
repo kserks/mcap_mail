@@ -1,6 +1,7 @@
 <script>
 import api from './utils/api.js';
-import { flagComponent, playerName, mails } from './store/common.js';
+import { flagComponent, playerName, mails, balance } from './store/common.js';
+//import socket from './service/socket.js';
 /* components */
 import Nav from './components/Nav.svelte';
 import Mails from './components/Mails.svelte';
@@ -10,8 +11,9 @@ import UnlockMail from './components/UnlockMail.svelte';
 
 
 window.setName = function (name){
-	$playerName = name
+	$playerName = name;
 }
+$balance = 1000;
 
 
 
@@ -25,16 +27,14 @@ function getMails (){
 getMails();
 
 
-/**
- * Если вложения нет то нету тарифа тариф=0
- * Стоимость есть всегда у письма
- * При отправке проверяется баланс, что его хватало для тарифа
- * При получении проверяется баланс, что бы его хватало на объявленную стоимость
- * [ storage ] - { tso } - время до которого будет храниться
- */
-
 const components = [ Forms, ReadMail, UnlockMail ]
 
+/*
+socket.on('get_mail', data=> {
+    alert(data)
+});
+
+*/
 </script>
 
 <main>
