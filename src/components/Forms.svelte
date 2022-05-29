@@ -4,22 +4,23 @@ import api from '../utils/api.js';
 import mcefQuery from '../utils/mcef-query.js';
 import { playerName, balance, senderPlayer } from '../store/common.js';
 import { createEventDispatcher } from 'svelte';
-//import socket from '../service/socket.js';
 import { fromInvToCoords, fromCoordsToInv } from '../helpers/coords.js';
-
+import { onDestroy } from 'svelte';
+import getStorage from '../methods/get-storage.js';
+import getTime from '../utils/get-time.js'
 
 const emit = createEventDispatcher();
+let SEND = false;
+const MONTH = 2592000; //s
+let shalkerFlag = true;
 
-const MONTH = 259200; //s
-function getTime (){
-  return Number( ( new Date().getTime()/1000 ).toFixed() );
-}
+
 
 /**
  * FORM
  */
 let body = {
-    "id": "",
+    "id": uid(),
     "sender": "",
     "target": $senderPlayer,
     "subject": "",
@@ -27,33 +28,36 @@ let body = {
     "price": "",//num
     "tax": 0, //num
     "tso": 0,
-    "status": 0
+    "status": 0,
+    "attach": false
 }
 
 function send_mail (){
-  if(body.target===""&&!$senderPlayer) return;
-
-  body.id = uid();
+  if(!body.target&&!$senderPlayer) return;
   body.sender = $playerName;
   body.tso = getTime();
   body.price = Number( body.price )
   body.tax = Number( body.tax )
   $balance = $balance - body.tax;
-
+  body.attach = !shalkerFlag;
+  delete body.select
   fetch(api.add_mail, {
           method: 'POST',
           body: JSON.stringify(body)
   })
-  .then(()=>{
+  .then((r)=>{
+      SEND = true
       resetForm()
       emit('update_mail_list')
-      //socket.emit("send_mail", body);
+      DEV&&console.log(r.status, api.add_mail) 
   })
   .catch(err=>console.error(err))
 
 }
 
 function resetForm (){
+  SEND = false;
+  shalkerFlag = true;
   body = {
     "id": "",
     "sender": "",
@@ -63,53 +67,47 @@ function resetForm (){
     "price": "",
     "tax": 0,
     "tso": 0,
-    "status": 0
+    "status": 0,
+    "attach": false
   }
 }
 
-/**
- * STORAGE
- */
 
-function getStorage (){
-  return new Promise((resolve, reject)=>{
-      fetch(api.storage)
-        .then(r => r.json())
-        .then(data => {
-            resolve(data.items)
-        })
-        .catch(err => console.error(err))
-  })
-}
 
 /**
  * ATTACH
  */
-// /itp slot 1 mcap_serg coords 636 69 -554
 let slot = null;
-
-
 /**
-UPDATE storage
-SET item = "mcap_serg_2" 
-WHERE pos = "636 69 -554";
-*/
+ * Отправляем шалкер на почту
+ * И отменяем отправку в случае необходимости
+ */
 
-
+let _pos;
 async function transitionShalker (){
 
   const storage = await getStorage();
-  //console.log(JSON.stringify(storage))
-  //debugger
-  const availablePlace = storage.filter(store => store.item==="")[0];
-  //setItemToStorage(availablePlace.pos)
+  /**
+   * Получаем пустое место в хранилище почты
+   */
+  const { pos } = storage.filter(store => store.item==="")[0];
   let cmdDATA;
   if(shalkerFlag){
-      cmd = fromInvToCoords(availablePlace.pos, slot, $playerName);
+      cmdDATA = fromInvToCoords(pos, slot, $playerName);
+      shalkerFlag = false;
+      shalkerWriteToDB(pos, true)
+      // сохраняем текущие координаты, так как при отмене шалкера
+      // мы не получим уже занятую запись
+      _pos = pos
   }
   else{
-      cmd = fromCoordsToInv(availablePlace.pos, slot, $playerName);
+      cmdDATA = fromCoordsToInv(pos, slot, $playerName);
+      shalkerFlag = true;
+      shalkerWriteToDB(_pos, false)
   }
+  /**
+   * Подготавливаем данные для выполнение команды при помощи Minecraft
+   */
   const data = {
         "data": cmdDATA,
         "action": "executeCMD",
@@ -121,29 +119,52 @@ async function transitionShalker (){
   }
   const str = `CMD_${JSON.stringify(data)}`;
 
-  mcefQuery(str);
+  if(!window.DEV){
+     mcefQuery(str);
+  }
 
 }
 
-
-
-
-/*
-function setItemToStorage (coords){
-  const [ x, y, z ] = coords.split(' ');
-  const params = {
-   // coords,
-    item: "test",
-    tso: 1234
-  }
-  fetch(api.update_storage(params, x, y, z))
-    .then(r=>{
-      console.log(r)
+/**
+ * При добавлении шалкера необходимо оставить запись об этом в базе
+ * А при извлечении шалкера, необходимо очистить запись 
+ */
+function shalkerWriteToDB (pos, placeShalker){
+    let data;
+    if(placeShalker){
+        data = {
+          "pos": pos,
+          "item": body.id,
+          "tso": getTime() + MONTH
+        }
+    }
+    else{
+        data = {
+          "pos": pos,
+          "item": "",
+          "tso": 0
+        }
+    }
+    fetch(api.update_storage, {
+            method: 'POST',
+            body: JSON.stringify(data)
     })
-    .catch(err=>console.error(err))
-}*/
-/*****************/
-//setItemToStorage ("636 69 -554")
+    .then( r => DEV&&console.log(r.status, api.update_storage) )
+    .catch( err => console.error(err) )
+}
+
+/**
+ * Если сообщение небыло отправлено, то возвращаем шалкер
+ * и очищаем запись о нём в  базе
+ */
+
+onDestroy(()=>{
+  if(!SEND) {
+    shalkerWriteToDB(_pos, false) 
+   // shalkerFlag = false
+    //transitionShalker()
+  }
+})
 
 </script>
 
@@ -157,7 +178,7 @@ function setItemToStorage (coords){
           <input type="number" placeholder="Тариф" bind:value={body.tax}>
           <input type="number" placeholder="Стоимость" bind:value={body.price}>
           <input type="number" placeholder="Слот" bind:value={slot} min="0" max="8">
-          <button class="tax { (body.tax>0&&slot>-1)?'tax-active':''}" on:click={transitionShalker}>Разместить</button>
+          <button class="attach { body.tax>0&&/[0-8]/i.test(slot)&&slot<9?'tax-active':''}" on:click={transitionShalker}>{shalkerFlag?'Разместить':'Отмена'}</button>
     </div>
     <button class="send" on:click={send_mail}>Отправить</button>
 </aside>
@@ -183,7 +204,7 @@ function setItemToStorage (coords){
 }
 textarea{
   width: 100%;
-  height: 67%;
+  height: 75%;
 }
 
 
@@ -193,15 +214,16 @@ textarea{
   justify-content: space-between;
 }
 .controls input{
-  width: 107px;
+  width: 160px;
   text-align: center;
 }
 .send{
   width: 100%;
 }
-.tax{
+.attach{
   pointer-events: none;
   opacity: 0.4;
+  width: 160px;
 }
 .tax-active{
   pointer-events: all;

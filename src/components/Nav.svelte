@@ -31,7 +31,7 @@ getPlayer()
 
 <style scoped>
 nav{
-  background-color: black;
+  background-color: rgba(0,100,100, 0.1);
   box-shadow: 0 1px 2px rgba(0,0,0,0.3);
   height: 7%;
   display: flex;
@@ -41,14 +41,6 @@ nav{
   padding: 0 10px;
 }
 
-.add-mail{
-  width: 20px;
-  height: 20px;
-}
-.add-mail:hover{
-  cursor: pointer;
-  filter: brightness(200%);
-}
 .nav__group{
   display: flex;
   align-items: center;
@@ -66,7 +58,7 @@ nav{
   font-size: 16px;
   display: inline-flex;
   align-items: center;
-  color: rgba(0,100,100,0.7);
+  color: rgba(200,100,50,0.7);
   justify-content: flex-end;
 }
 

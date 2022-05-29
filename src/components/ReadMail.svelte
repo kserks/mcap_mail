@@ -1,18 +1,36 @@
 <script>
- import { flagComponent, currentMail } from '../store/common.js';
+import { flagComponent, currentMail, playerName } from '../store/common.js';
+import api from '../utils/api.js';
 
-
+if($currentMail.status===0){
+    const data = $currentMail
+    data.status = 1
+    fetch(api.update_mail, {
+            method: 'POST',
+            body: JSON.stringify(data)
+    })
+    .then( r => DEV&&console.log(r.status, api.update_mail) )
+    .catch( err => console.error(err) )
+}
 
 function add_mail(){
   $flagComponent = 0;
 }
 
+$:player = (()=>{
+  if($currentMail.sender===$playerName){
+    return $currentMail.target
+  }
+  else{
+    return $currentMail.sender
+  }
+})()
 </script>
 
 <aside class="forms">
     <div class="forms__group-input">
             <input type="text" disabled class="forms__title" value={$currentMail.subject}>
-            <input type="text" disabled class="forms__to" value={$currentMail.sender}>
+            <input type="text" disabled class="forms__to" bind:value={player}>
     </div>
     <textarea disabled value={$currentMail.body}></textarea>
     <button class="send" on:click={add_mail}>Ответить</button>
@@ -39,7 +57,7 @@ function add_mail(){
 }
 textarea{
   width: 100%;
-  height: 78%;
+  height: 83%;
 }
 .send{
   width: 100%;
