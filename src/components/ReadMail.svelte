@@ -1,17 +1,8 @@
 <script>
 import { flagComponent, currentMail, playerName } from '../store/common.js';
-import api from '../utils/api.js';
 
-if($currentMail.status===0){
-    const data = $currentMail
-    data.status = 1
-    fetch(api.update_mail, {
-            method: 'POST',
-            body: JSON.stringify(data)
-    })
-    .then( r => DEV&&console.log(r.status, api.update_mail) )
-    .catch( err => console.error(err) )
-}
+
+
 
 function add_mail(){
   $flagComponent = 0;

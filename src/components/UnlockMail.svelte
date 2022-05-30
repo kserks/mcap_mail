@@ -4,17 +4,6 @@ import shalker from '../methods/Shalker.js';
 import getStorage from '../methods/get-storage.js';
 import api from '../utils/api.js';
 
-// отмечаем прочитанные
-
-if($currentMail.status===0){
-    $currentMail.status = 1
-    fetch(api.update_mail, {
-            method: 'POST',
-            body: JSON.stringify({ ...$currentMail })
-    })
-    .then( r => DEV&&console.log(r.status, api.update_mail) )
-    .catch( err => console.error(err) )
-}
 
 
 let slot = null;

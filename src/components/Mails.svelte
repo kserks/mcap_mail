@@ -1,6 +1,6 @@
 <script>
 import { flagComponent, currentMail, mails, playerName, senderPlayer} from '../store/common.js';
-
+import api from '../utils/api.js';
 
 // Входящие
 $:mails_incoming = $mails.filter(mail => {
@@ -11,6 +11,10 @@ $:mails_self = $mails.filter(mail => mail.sender===$playerName).sort().reverse()
 
 
 function openMail (mail, index){
+    $currentMail = mail;
+    $senderPlayer = mail.sender;
+    changeStatus()
+
     if(mail.attach){
         $flagComponent = 2;
     }
@@ -18,8 +22,7 @@ function openMail (mail, index){
         $flagComponent = 1;
     }
     //mails_incoming[index].select = true
-    $currentMail = mail;
-    $senderPlayer = mail.sender;
+
 }
 function openSelfMail (mail){
     $flagComponent = 1;
@@ -27,8 +30,19 @@ function openSelfMail (mail){
     $senderPlayer = mail.sender;
 }
 
-
-
+// отмечаем сообщения как прочитанные
+function changeStatus (){
+  if($currentMail.status===0){
+      const data = $currentMail
+      data.status = 1
+      fetch(api.update_mail, {
+              method: 'POST',
+              body: JSON.stringify(data)
+      })
+      .then( r => DEV&&console.log(r.status, api.update_mail) )
+      .catch( err => console.error(err) )
+  }
+}
 
 </script>
 
