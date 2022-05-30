@@ -9,6 +9,7 @@ import Forms from './components/Forms.svelte';
 import ReadMail from './components/ReadMail.svelte';
 import UnlockMail from './components/UnlockMail.svelte';
 
+const PING = 3000
 
 if(DEV){
 	window.setName = function (name){
@@ -31,7 +32,7 @@ function getMails (){
 
 getMails();
 
-setInterval(getMails, 3000)
+setInterval(getMails, PING)
 
 const components = [ Forms, ReadMail, UnlockMail ]
 

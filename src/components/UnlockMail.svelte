@@ -1,83 +1,46 @@
 <script>
 import { flagComponent, currentMail, balance, playerName } from '../store/common.js';
+import shalker from '../methods/Shalker.js';
+import getStorage from '../methods/get-storage.js';
+import api from '../utils/api.js';
+
+// отмечаем прочитанные
+
+if($currentMail.status===0){
+    $currentMail.status = 1
+    fetch(api.update_mail, {
+            method: 'POST',
+            body: JSON.stringify({ ...$currentMail })
+    })
+    .then( r => DEV&&console.log(r.status, api.update_mail) )
+    .catch( err => console.error(err) )
+}
 
 
+let slot = null;
 
-const SLOT = 0;
-
-let ATTACH = true
-
-async function getShalker (){
-
-  /**
-   * Получаю запись из базы с нужным шалкером
-   */
-  //const storage = await getStorage()
-  //const place = storage.find(_place => _place.item === $currentMail.id);
- //
-  // Формирую запрос для mcefQuery
-  //const cmdDATA = fromCoordsToInv(place.pos, SLOT, $playerName);
-
-  /**
-   * Подготавливаем данные для выполнение команды при помощи Minecraft
-   *//*
-  const data = {
-        "data": cmdDATA,
-        "action": "executeCMD",
-        "uuid": place.item,
-        "type": "server",
-        "dts": getTime(),
-        "ars": true,
-        "player": $playerName
-  }
-  const str = `CMD_${JSON.stringify(data)}`;
-  DEV&&console.log(data)*/
-  //removeShalkerFromDB(place.pos)
-  //removeAttachFromItem()
-  /*
-  if(!DEV){
-
-    mcefQuery(str)
-      .then( () => {
-          removeShalkerFromDB(place.pos)
-          removeAttachFromItem()
-
-      })
-      .catch(err => console.error(err))
-
-  }*/
+async function getAttach (){
+  $balance = $balance - $currentMail.price;
+  const storage = await getStorage()
+  const place = storage.find(_place => _place.item === $currentMail.id);
+  shalker.from(slot, $playerName, place.pos, removeAttachFromItem)
 }
 
 /**
  * Удаляю информацию о шалкере из базы
  */
-/*
-function removeShalkerFromDB (pos){
-    const data = { "pos": pos, "item": "", "tso": 0 }
-    fetch(api.update_storage, {
-            method: 'POST',
-            body: JSON.stringify(data)
-    })
-    .then( r => DEV&&console.log(r.status, api.update_storage) )
-    .catch( err => console.error(err) )
-}
+function removeAttachFromItem(){
 
-function removeAttachFromItem (){
-  const body = $currentMail
-  body.attach = false
+  $currentMail.attach = false
   fetch(api.update_mail, {
           method: 'POST',
-          body: JSON.stringify(body)
+          body: JSON.stringify({...$currentMail})
   })
-  .then(r=>{
+  .then(r => {
+      slot = null
       DEV&&console.log(r.status, api.update_mail) 
   })
-  .catch(err=>console.error(err))
-}*/
-
-function getAttach (){
-  $balance = $balance - $currentMail.price;
-  getShalker()
+  .catch(err => console.error(err))
 }
 
 function add_mail(){
@@ -93,8 +56,8 @@ function add_mail(){
     </div>
     <textarea disabled value={$currentMail.body}></textarea>
     <div class="group__btns">
-      <input type="number" min="0" max="8" placeholder="slot">
-      <button class="get-attach ${ATTACH?'':'disable'}" on:click={ getAttach }>Получить вложение ( { $currentMail.price } )</button>
+      <input type="number" min="0" max="8" placeholder="Слот" bind:value={slot}>
+      <button class="get-attach  { /[0-8]/i.test(slot)&&slot<9?'enable':''}"  on:click={ getAttach }>Получить вложение  { $currentMail.price } </button>
       <button class="send" on:click={add_mail}>Ответить</button>
     </div>
 </aside>
@@ -126,8 +89,11 @@ textarea{
   width: 35%;
 }
 .get-attach{
-  width: 60%;
+  flex: 1;
+  margin: 0 15px 0.5em 15px;
   background-color: rgba(100, 0,0,0.1);
+  pointer-events: none;
+  opacity: 0.3;
 }
 .get-attach:hover{
   background-color: rgba(100, 0,0,0.3);
@@ -137,8 +103,14 @@ textarea{
   display: flex;
   justify-content: space-between;
 }
-.disable{
-  pointer-events: none;
-  opacity: 0.2;
+
+input{
+  width: 160px;
+  text-align: center;
 }
+.enable{
+  pointer-events: all;
+  opacity: 1;
+}
+
 </style>

@@ -17,7 +17,7 @@ function openMail (mail, index){
     else{
         $flagComponent = 1;
     }
-    mails_incoming[index].select = true
+    //mails_incoming[index].select = true
     $currentMail = mail;
     $senderPlayer = mail.sender;
 }
@@ -62,6 +62,7 @@ li{
   border-radius: 4px;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
   height: 28px;
+  color: gray;
 }
 li:hover{
   cursor: pointer;

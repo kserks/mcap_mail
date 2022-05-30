@@ -5,11 +5,13 @@ import { playerName, senderPlayer, currentMail, balance, sendStatus } from '../s
 import { createEventDispatcher } from 'svelte';
 import getTime from '../utils/get-time.js'
 import ShalkerControl from './ShalkerControl.svelte'
-
+import { onMount } from 'svelte'
 
 const emit = createEventDispatcher();
 
-
+onMount(()=>{
+  $sendStatus = false;
+})
 /**
  * FORM
  */
@@ -50,8 +52,6 @@ function send_mail (){
 }
 
 function resetForm (){
-  $sendStatus = false;
-
   $currentMail = {
     "id": "",
     "sender": "",

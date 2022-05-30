@@ -16,11 +16,14 @@ class Shalker {
           this.toDB(coords)
       })
   }
-  from (slot, player, coords){
+  from (slot, player, coords, callback){
       this.player = player
       const cmd = `itp coords ${coords} slot ${slot} ${this.player}`
       this.transition(cmd, ()=>{
           this.fromDB(coords)
+          if(callback){
+              callback()
+          }
       })
   }
   // размещаем Шалкер внутри Майнкрафт
@@ -35,6 +38,7 @@ class Shalker {
             "player": this.player
       }
       const str = `CMD_${ JSON.stringify(data) }`;
+      if(DEV) return
       mcefQuery(str)
         .then( () => callback())
         .catch(err => console.error(err))
@@ -67,5 +71,4 @@ class Shalker {
 
 }
 
-
-export default Shalker
+export default new Shalker()

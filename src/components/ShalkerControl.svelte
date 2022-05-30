@@ -6,9 +6,9 @@ import getStorage from '../methods/get-storage.js';
 
 import { onDestroy } from 'svelte';
 import { playerName, balance, currentMail, sendStatus } from '../store/common.js';
-import Shalker from '../methods/Shalker.js';
+import shalker from '../methods/Shalker.js';
 
-const shalker = new Shalker()
+
 let slot = null
 let tax = $currentMail.tax
 let price = $currentMail.price
