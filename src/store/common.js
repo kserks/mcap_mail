@@ -9,3 +9,5 @@ export let balance = writable(0);
 export let flagComponent = writable(0);
 export let currentMail = writable(null);
 export let senderPlayer = writable(null);
+//
+//export let body = writable(null);

@@ -37,13 +37,13 @@ async function getShalker (){
   DEV&&console.log(data)
   //removeShalkerFromDB(place.pos)
   //removeAttachFromItem()
-        
+  
   if(!DEV){
-    removeShalkerFromDB(place.pos)
-    removeAttachFromItem()
+
     mcefQuery(str)
       .then( () => {
-          alert()
+          removeShalkerFromDB(place.pos)
+          removeAttachFromItem()
 
       })
       .catch(err => console.error(err))
@@ -54,6 +54,7 @@ async function getShalker (){
 /**
  * Удаляю информацию о шалкере из базы
  */
+/*
 function removeShalkerFromDB (pos){
     const data = { "pos": pos, "item": "", "tso": 0 }
     fetch(api.update_storage, {
@@ -75,7 +76,7 @@ function removeAttachFromItem (){
       DEV&&console.log(r.status, api.update_mail) 
   })
   .catch(err=>console.error(err))
-}
+}*/
 
 function getAttach (){
   $balance = $balance - $currentMail.price;
@@ -95,6 +96,7 @@ function add_mail(){
     </div>
     <textarea disabled value={$currentMail.body}></textarea>
     <div class="group__btns">
+      <input type="number" min="0" max="8" placeholder="slot">
       <button class="get-attach ${ATTACH?'':'disable'}" on:click={ getAttach }>Получить вложение ( { $currentMail.price } )</button>
       <button class="send" on:click={add_mail}>Ответить</button>
     </div>

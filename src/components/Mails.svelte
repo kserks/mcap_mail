@@ -75,8 +75,4 @@ li:hover{
   background-color: rgba(0,100,100,0.3);
 }
 
-.select{
-  background-color: rgba(0,120,100,0.1);
-}
-
 </style>
