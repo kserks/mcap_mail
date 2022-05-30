@@ -4,12 +4,12 @@ import api from '../utils/api.js';
 import { playerName, senderPlayer, currentMail, balance } from '../store/common.js';
 import { createEventDispatcher } from 'svelte';
 import getTime from '../utils/get-time.js'
-//import ShalkerControl from './ShalkerControl.svelte'
+import ShalkerControl from './ShalkerControl.svelte'
 
 
 const emit = createEventDispatcher();
 let SEND = false;
-const MONTH = 2592000; //s
+
 
 /**
  * FORM
@@ -78,7 +78,7 @@ function resetForm (){
             <input type="text" placeholder="Кому" class="forms__to" bind:value={$currentMail.target}>
     </div>
     <textarea  placeholder="Текст отправления" bind:value={ $currentMail.body }></textarea>
-    <!--<ShalkerControl/>-->
+    <ShalkerControl/>
 
     <button class="send" on:click={send_mail}>Отправить</button>
 </aside>
@@ -106,6 +106,8 @@ textarea{
   width: 100%;
   height: 75%;
 }
-
+.send{
+  width: 100%;
+}
 
 </style>

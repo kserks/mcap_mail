@@ -5,17 +5,20 @@ import api from '../utils/api.js';
 import getStorage from '../methods/get-storage.js';
 import { fromInvToCoords, fromCoordsToInv } from '../helpers/coords.js';
 import { onDestroy } from 'svelte';
-import { playerName, balance } from '../store/common.js';
+import { playerName, balance, currentMail } from '../store/common.js';
 
-
-let slot = null;
+const MONTH = 2592000; //s
 let shalkerFlag = true;
+let slot = null;
+let tax = $currentMail.tax
+let price = $currentMail.price
+let _pos;
+let id = $currentMail.id
+
 /**
  * Отправляем шалкер на почту
  * И отменяем отправку в случае необходимости
  */
-
-let _pos;
 async function transitionShalker (){
 
   const storage = await getStorage();
@@ -27,7 +30,7 @@ async function transitionShalker (){
   if(shalkerFlag){
       cmdDATA = fromInvToCoords(pos, slot, $playerName);
       shalkerFlag = false;
-      shalkerWriteToDB(pos, true)
+      //shalkerWriteToDB(pos, true)
       // сохраняем текущие координаты, так как при отмене шалкера
       // мы не получим уже занятую запись
       _pos = pos
@@ -35,7 +38,7 @@ async function transitionShalker (){
   else{
       cmdDATA = fromCoordsToInv(pos, slot, $playerName);
       shalkerFlag = true;
-      shalkerWriteToDB(_pos, false)
+      //shalkerWriteToDB(_pos, false)
   }
   /**
    * Подготавливаем данные для выполнение команды при помощи Minecraft
@@ -43,7 +46,7 @@ async function transitionShalker (){
   const data = {
         "data": cmdDATA,
         "action": "executeCMD",
-        "uuid": uid(),
+        "uuid": id,
         "type": "server",
         "dts": getTime(),
         "ars": true,
@@ -51,22 +54,22 @@ async function transitionShalker (){
   }
   const str = `CMD_${JSON.stringify(data)}`;
 
-  if(!DEV){
-     mcefQuery(str);
-  }
-
+  
+  !DEV && mcefQuery(str);
+  
 }
 
 /**
  * При добавлении шалкера необходимо оставить запись об этом в базе
  * А при извлечении шалкера, необходимо очистить запись 
  */
+/*
 function shalkerWriteToDB (pos, placeShalker){
     let data;
     if(placeShalker){
         data = {
           "pos": pos,
-          "item": body.id,
+          "item": $currentMail.id,
           "tso": getTime() + MONTH
         }
     }
@@ -84,12 +87,12 @@ function shalkerWriteToDB (pos, placeShalker){
     .then( r => DEV&&console.log(r.status, api.update_storage) )
     .catch( err => console.error(err) )
 }
-
+*/
 /**
  * Если сообщение небыло отправлено, то возвращаем шалкер
  * и очищаем запись о нём в  базе
  */
-
+/*
 onDestroy(()=>{
   if(!SEND) {
     shalkerWriteToDB(_pos, false) 
@@ -101,18 +104,18 @@ onDestroy(()=>{
 function reset (){
   shalkerFlag = true;
 }
-
+*/
 
 </script>
 
-<!--
+
 <div class="controls">
-      <input type="number" placeholder="Тариф" bind:value={body.tax}>
-      <input type="number" placeholder="Стоимость" bind:value={body.price}>
+      <input type="number" placeholder="Тариф" bind:value={tax}>
+      <input type="number" placeholder="Стоимость" bind:value={price}>
       <input type="number" placeholder="Слот" bind:value={slot} min="0" max="8">
-      <button class="attach { body.tax>0&&/[0-8]/i.test(slot)&&slot<9?'tax-active':''}" on:click={transitionShalker}>{shalkerFlag?'Разместить':'Отмена'}</button>
+      <button class="attach { tax>0&&/[0-8]/i.test(slot)&&slot<9?'tax-active':''}" on:click={transitionShalker}>{shalkerFlag?'Разместить':'Отмена'}</button>
 </div>
--->
+
 <style scoped>
 
 
@@ -124,9 +127,7 @@ function reset (){
   width: 160px;
   text-align: center;
 }
-.send{
-  width: 100%;
-}
+
 .attach{
   pointer-events: none;
   opacity: 0.4;
