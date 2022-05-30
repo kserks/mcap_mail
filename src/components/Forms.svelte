@@ -1,14 +1,13 @@
 <script>
 import uid from '../utils/uid.js';
 import api from '../utils/api.js';
-import { playerName, senderPlayer, currentMail, balance } from '../store/common.js';
+import { playerName, senderPlayer, currentMail, balance, sendStatus } from '../store/common.js';
 import { createEventDispatcher } from 'svelte';
 import getTime from '../utils/get-time.js'
 import ShalkerControl from './ShalkerControl.svelte'
 
 
 const emit = createEventDispatcher();
-let SEND = false;
 
 
 /**
@@ -29,19 +28,19 @@ $currentMail = {
 
 function send_mail (){
   if(!$currentMail.target&&!$senderPlayer) return;
+
   $currentMail.sender = $playerName;
   $currentMail.tso = getTime();
   $currentMail.price = Number( $currentMail.price )
   $currentMail.tax = Number( $currentMail.tax )
   $balance = $balance - $currentMail.tax;
-  //$currentMail.attach = !shalkerFlag;
-  delete $currentMail.select
+ 
   fetch(api.add_mail, {
           method: 'POST',
           body: JSON.stringify($currentMail)
   })
   .then((r)=>{
-      SEND = true
+      $sendStatus = true
       resetForm()
       emit('update_mail_list')
       DEV&&console.log(r.status, api.add_mail) 
@@ -51,7 +50,7 @@ function send_mail (){
 }
 
 function resetForm (){
-  SEND = false;
+  $sendStatus = false;
 
   $currentMail = {
     "id": "",

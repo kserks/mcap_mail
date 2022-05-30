@@ -4,7 +4,6 @@ import { flagComponent, currentMail, mails, playerName, senderPlayer} from '../s
 
 // Входящие
 $:mails_incoming = $mails.filter(mail => {
-  mail.select = false
   if(mail.target===$playerName) return true;
 }).sort().reverse()
 // Исходящие

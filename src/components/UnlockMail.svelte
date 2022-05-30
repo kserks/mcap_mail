@@ -1,10 +1,7 @@
 <script>
 import { flagComponent, currentMail, balance, playerName } from '../store/common.js';
-import getStorage from '../methods/get-storage.js';
-import getTime from '../utils/get-time.js'
-import { fromCoordsToInv } from '../helpers/coords.js';
-import api from '../utils/api.js';
-import mcefQuery from '../utils/mcef-query.js';
+
+
 
 const SLOT = 0;
 
@@ -15,15 +12,15 @@ async function getShalker (){
   /**
    * Получаю запись из базы с нужным шалкером
    */
-  const storage = await getStorage()
-  const place = storage.find(_place => _place.item === $currentMail.id);
- 
+  //const storage = await getStorage()
+  //const place = storage.find(_place => _place.item === $currentMail.id);
+ //
   // Формирую запрос для mcefQuery
-  const cmdDATA = fromCoordsToInv(place.pos, SLOT, $playerName);
+  //const cmdDATA = fromCoordsToInv(place.pos, SLOT, $playerName);
 
   /**
    * Подготавливаем данные для выполнение команды при помощи Minecraft
-   */
+   *//*
   const data = {
         "data": cmdDATA,
         "action": "executeCMD",
@@ -34,10 +31,10 @@ async function getShalker (){
         "player": $playerName
   }
   const str = `CMD_${JSON.stringify(data)}`;
-  DEV&&console.log(data)
+  DEV&&console.log(data)*/
   //removeShalkerFromDB(place.pos)
   //removeAttachFromItem()
-  
+  /*
   if(!DEV){
 
     mcefQuery(str)
@@ -48,7 +45,7 @@ async function getShalker (){
       })
       .catch(err => console.error(err))
 
-  }
+  }*/
 }
 
 /**
